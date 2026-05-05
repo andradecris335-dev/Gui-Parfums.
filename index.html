@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gui Parfums | Gestão Vip</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --gold: #d4af37; --dark-bg: #050505; --card-bg: #111111; --accent-green: #25d366; }
+        body { background-color: var(--dark-bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; justify-content: center; overflow-x: hidden; }
+        .container { width: 100%; max-width: 500px; min-height: 100vh; padding: 20px; box-sizing: border-box; }
+        
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .profile { text-align: center; margin-bottom: 30px; }
+        .profile img { width: 110px; height: 110px; border-radius: 50%; border: 2px solid var(--gold); cursor: pointer; object-fit: cover; background: #222; }
+        
+        .nav-button { display: flex; align-items: center; justify-content: center; background: var(--card-bg); border: 1px solid #222; color: white; padding: 18px; margin-bottom: 15px; border-radius: 12px; text-decoration: none; font-weight: 600; cursor: pointer; }
+        
+        .grid-perfumes { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .card { background: var(--card-bg); border-radius: 15px; padding: 12px; border: 1px solid #222; text-align: center; position: relative; }
+        .card img { width: 100%; height: 140px; object-fit: contain; background: #fff; border-radius: 8px; margin-bottom: 10px; }
+        
+        /* ADMIN CONTROLS */
+        .admin-input, .admin-label, .btn-admin-only { display: none; }
+        .admin-active .admin-input, .admin-active .admin-label, .admin-active .btn-admin-only { display: block; }
+        .admin-active .display-text { display: none; }
+
+        .admin-input { width: 100%; background: #000; color: var(--gold); border: 1px solid var(--gold); border-radius: 4px; padding: 8px; margin: 4px 0; font-size: 0.8rem; box-sizing: border-box; }
+        .admin-label { font-size: 0.65rem; color: var(--gold); text-align: left; margin-top: 8px; font-weight: bold; }
+        
+        .btn-remove { color: #ff4444; font-size: 0.75rem; cursor: pointer; margin-top: 8px; background: none; border: 1px solid #ff444444; padding: 6px; border-radius: 6px; width: 100%; font-weight: bold; }
+        .btn-reply { color: var(--gold); font-size: 0.75rem; cursor: pointer; margin-top: 5px; background: none; border: 1px solid #d4af3744; padding: 6px; border-radius: 6px; width: 100%; font-weight: bold; }
+
+        .star-rating { color: #444; cursor: pointer; font-size: 1.3rem; margin: 10px 0; }
+        .star-rating .fa-star.active { color: var(--gold); }
+
+        .btn-buy { background: var(--accent-green); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 8px; }
+        
+        #admin-bar { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 999; gap: 10px; width: 90%; max-width: 400px; }
+        .admin-btn { flex: 1; padding: 12px; border-radius: 25px; font-weight: bold; cursor: pointer; border: none; font-size: 0.8rem; }
+
+        /* CUSTOM MODAL (LAYOUT DA PÁGINA) */
+        #custom-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px); }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--gold); padding: 25px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,1); border-bottom: 4px solid var(--gold); }
+        .modal-content h3 { margin-top: 0; color: var(--gold); letter-spacing: 1px; font-size: 1.2rem; }
+        .modal-content input { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; margin-top: 15px; box-sizing: border-box; text-align: center; }
+        .modal-btns { display: flex; gap: 10px; margin-top: 25px; }
+        .modal-btns button { flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-confirm-modal { background: var(--gold); color: #000; }
+        .btn-cancel-modal { background: #222; color: #fff; }
+
+        /* Comentários */
+        .comment-box { background: #151515; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 3px solid var(--gold); position: relative; }
+        .reply-box { background: #000; margin-top: 10px; padding: 10px; border-radius: 8px; font-size: 0.85rem; border: 1px solid #222; color: #ddd; }
+        .owner-tag { color: var(--gold); font-size: 0.65rem; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+<!-- MODAL PERSONALIZADO (SEM ALERTAS DO WINDOWS) -->
+<div id="custom-modal">
+    <div class="modal-content">
+        <h3 id="modal-title">Título</h3>
+        <p id="modal-text" style="color: #bbb; font-size: 0.9rem; margin-bottom: 0;"></p>
+        <div id="modal-input-container"></div>
+        <div class="modal-btns">
+            <button id="modal-cancel" class="btn-cancel-modal">Cancelar</button>
+            <button id="modal-confirm" class="btn-confirm-modal">Confirmar</button>
+        </div>
+    </div>
+</div>
+
+<div class="container" id="app">
+    <div id="home" class="page active">
+        <div class="profile">
+            <img src="WhatsApp Image 2026-05-04 at 18.46.47.jpeg" onclick="adminLogin()">
+            <h2>Gui Parfums</h2>
+            <p style="color: #888;">Luxo e Exclusividade</p>
+        </div>
+
+        <div class="nav-button" onclick="goTo('catalog')"><i class="fas fa-shopping-bag" style="margin-right: 12px; color: var(--gold);"></i> Ver Catálogo</div>
+        <a href="https://wa.me/qr/O4T3FOBIPCKJJ1" class="nav-button" style="color: var(--accent-green); border-color: #25d36644;"><i class="fab fa-whatsapp" style="margin-right: 12px;"></i> WhatsApp</a>
+
+        <div style="margin-top: 40px; border-top: 1px solid #222; padding-top: 25px;">
+            <h3>Avalie nossa loja</h3>
+            <div id="star-selector" class="star-rating">
+                <i class="fas fa-star" data-v="1"></i><i class="fas fa-star" data-v="2"></i><i class="fas fa-star" data-v="3"></i><i class="fas fa-star" data-v="4"></i><i class="fas fa-star" data-v="5"></i>
+            </div>
+            <input type="text" id="user-name" placeholder="Seu nome" style="width:100%; padding:12px; background:#111; border:1px solid #333; color:white; border-radius:10px; margin-bottom:10px;">
+            <textarea id="user-msg" placeholder="Sua mensagem..." style="width:100%; padding:12px; background:#111; border:1px solid #333; color:white; border-radius:10px; height: 70px;"></textarea>
+            <button onclick="salvarComentario()" style="background:var(--gold); border:none; width:100%; padding:14px; border-radius:10px; font-weight:bold; margin-top:10px; cursor:pointer; color: #000;">Postar Avaliação</button>
+            
+            <div id="comentarios-lista" style="margin-top: 25px;"></div>
+        </div>
+    </div>
+
+    <div id="catalog" class="page">
+        <div style="display: flex; align-items: center; margin-bottom: 25px;">
+            <i class="fas fa-chevron-left" onclick="goTo('home')" style="color: var(--gold); cursor: pointer; font-size: 1.2rem; padding: 10px;"></i>
+            <h2 style="margin-left: 10px;">Produtos</h2>
+        </div>
+        <div class="grid-perfumes" id="grid"></div>
+        <div style="height: 100px;"></div>
+    </div>
+
+    <div id="admin-bar">
+        <button class="admin-btn" style="background:var(--gold); color: black;" onclick="addProduto()">＋ NOVO ITEM</button>
+        <button class="admin-btn" style="background:#fff" onclick="saveAll()">💾 SALVAR TUDO</button>
+        <button class="admin-btn" style="background:#ff4444; color:#fff" onclick="exitAdmin()">✕ SAIR</button>
+    </div>
+</div>
+
+<script>
+    let currentStars = 0;
+    let clickCount = 0;
+    let db = JSON.parse(localStorage.getItem('guivip_db')) || [{ nome: "Le Male Elixir", preco: "R$ 620,00", img: "https://fimgs.net/mdimg/perfume/375x500.81648.jpg" }];
+    let comentarios = JSON.parse(localStorage.getItem('guivip_coment')) || [];
+
+    // MODAL VIP SYSTEM (SUBSTITUI TUDO O QUE É ALERT/PROMPT/CONFIRM)
+    function openModal(title, text, hasInput, onConfirm, isAlert = false) {
+        const modal = document.getElementById('custom-modal');
+        const container = document.getElementById('modal-input-container');
+        const cancelBtn = document.getElementById('modal-cancel');
+        
+        document.getElementById('modal-title').innerText = title;
+        document.getElementById('modal-text').innerText = text;
+        container.innerHTML = hasInput ? `<input type="text" id="modal-field" placeholder="Escreva aqui..." autocomplete="off">` : '';
+        
+        cancelBtn.style.display = isAlert ? 'none' : 'block';
+        modal.style.display = 'flex';
+
+        document.getElementById('modal-confirm').onclick = () => {
+            const val = hasInput ? document.getElementById('modal-field').value : true;
+            modal.style.display = 'none';
+            if(onConfirm) onConfirm(val);
+        };
+        cancelBtn.onclick = () => modal.style.display = 'none';
+    }
+
+    // STAR RATING
+    document.querySelectorAll('#star-selector i').forEach(star => {
+        star.onclick = () => {
+            currentStars = star.dataset.v;
+            document.querySelectorAll('#star-selector i').forEach(s => s.classList.toggle('active', s.dataset.v <= currentStars));
+        };
+    });
+
+    function render() {
+        const grid = document.getElementById('grid');
+        grid.innerHTML = "";
+        db.forEach((p, i) => {
+            grid.innerHTML += `
+                <div class="card">
+                    <img src="${p.img}" onerror="this.src='https://via.placeholder.com/150?text=Foto'">
+                    <h4 class="display-text">${p.nome}</h4>
+                    <div class="admin-label">Nome:</div>
+                    <input type="text" class="admin-input" value="${p.nome}" id="n-${i}">
+                    <span class="price display-text" style="color:var(--gold)">${p.preco}</span>
+                    <div class="admin-label">Preço:</div>
+                    <input type="text" class="admin-input" value="${p.preco}" id="p-${i}">
+                    <div class="admin-label">URL da Imagem:</div>
+                    <input type="text" class="admin-input" value="${p.img}" id="i-${i}">
+                    <button class="btn-buy" onclick="comprar('${p.nome}')">Comprar</button>
+                    <button class="btn-remove btn-admin-only" onclick="removerProduto(${i})">Remover Produto</button>
+                </div>`;
+        });
+
+        const lista = document.getElementById('comentarios-lista');
+        lista.innerHTML = "";
+        comentarios.forEach((c, i) => {
+            let replyHtml = c.reply ? `<div class="reply-box"><span class="owner-tag">Resposta do Dono</span>${c.reply}</div>` : '';
+            lista.innerHTML += `
+                <div class="comment-box">
+                    <div style="display:flex; justify-content:space-between">
+                        <b>${c.nome}</b>
+                        <div>${'<i class="fas fa-star" style="color:var(--gold); font-size:0.7rem"></i>'.repeat(c.stars)}</div>
+                    </div>
+                    <p style="margin:5px 0; color:#ccc; font-size:0.9rem">${c.msg}</p>
+                    ${replyHtml}
+                    <div class="btn-admin-only" style="margin-top:12px; display:flex; gap:8px">
+                        <button class="btn-reply" onclick="responderComentario(${i})">Responder</button>
+                        <button class="btn-remove" style="margin:0" onclick="excluirComentario(${i})">Excluir</button>
+                    </div>
+                </div>`;
+        });
+    }
+
+    function adminLogin() {
+        clickCount++;
+        if(clickCount >= 5) {
+            openModal("ACESSO RESTRITO", "Digite a senha do administrador:", true, (senha) => {
+                if(senha === "gui123") {
+                    document.getElementById('app').classList.add('admin-active');
+                    document.getElementById('admin-bar').style.display = 'flex';
+                    render();
+                    goTo('catalog');
+                } else { 
+                    openModal("ERRO", "Senha incorreta!", false, null, true); 
+                }
+            });
+            clickCount = 0;
+        }
+    }
+
+    function exitAdmin() {
+        document.getElementById('app').classList.remove('admin-active');
+        document.getElementById('admin-bar').style.display = 'none';
+        render();
+        goTo('home');
+    }
+
+    function addProduto() { db.push({ nome: "Novo Perfume", preco: "R$ 0,00", img: "" }); render(); }
+
+    function removerProduto(i) {
+        openModal("EXCLUIR", "Deseja remover este perfume?", false, (confirma) => {
+            if(confirma) { db.splice(i, 1); render(); }
+        });
+    }
+
+    function saveAll() {
+        db.forEach((p, i) => {
+            p.nome = document.getElementById(`n-${i}`).value;
+            p.preco = document.getElementById(`p-${i}`).value;
+            p.img = document.getElementById(`i-${i}`).value;
+        });
+        localStorage.setItem('guivip_db', JSON.stringify(db));
+        localStorage.setItem('guivip_coment', JSON.stringify(comentarios));
+        openModal("SUCESSO", "Catálogo atualizado!", false, () => location.reload(), true);
+    }
+
+    function salvarComentario() {
+        const nome = document.getElementById('user-name').value || "Cliente";
+        const msg = document.getElementById('user-msg').value;
+        if(!msg || currentStars === 0) {
+            return openModal("AVISO", "Dê nota e escreva sua mensagem!", false, null, true);
+        }
+        comentarios.unshift({ nome, msg, stars: currentStars, reply: null });
+        localStorage.setItem('guivip_coment', JSON.stringify(comentarios));
+        location.reload();
+    }
+
+    function excluirComentario(i) {
+        openModal("EXCLUIR", "Apagar avaliação?", false, (confirma) => {
+            if(confirma) { comentarios.splice(i, 1); localStorage.setItem('guivip_coment', JSON.stringify(comentarios)); render(); }
+        });
+    }
+
+    function responderComentario(i) {
+        openModal("RESPONDER", "Sua resposta oficial:", true, (resp) => {
+            if(resp) { comentarios[i].reply = resp; localStorage.setItem('guivip_coment', JSON.stringify(comentarios)); render(); }
+        });
+    }
+
+    function comprar(p) {
+        if(document.getElementById('app').classList.contains('admin-active')) return;
+        window.open("https://wa.me/qr/O4T3FOBIPCKJJ1?text=" + encodeURIComponent("Olá! Quero o " + p));
+    }
+
+    function goTo(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    window.onload = render;
+</script>
+</body>
+</html>
