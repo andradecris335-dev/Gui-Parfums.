@@ -14,9 +14,14 @@
         .page.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .profile { text-align: center; margin-bottom: 30px; }
-        .profile img { width: 110px; height: 110px; border-radius: 50%; border: 2px solid var(--gold); cursor: pointer; object-fit: cover; background: #222; }
+        /* PERFIL E LOGO */
+        .profile { text-align: center; margin-bottom: 30px; position: relative; }
+        .logo-container { position: relative; display: inline-block; width: 110px; height: 110px; }
+        .profile img { width: 110px; height: 110px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; background: #222; }
         
+        /* Botão invisível para facilitar o toque no celular */
+        .admin-trigger { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; border: none; background: transparent; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+
         .nav-button { display: flex; align-items: center; justify-content: center; background: var(--card-bg); border: 1px solid #222; color: white; padding: 18px; margin-bottom: 15px; border-radius: 12px; text-decoration: none; font-weight: 600; cursor: pointer; }
         
         .grid-perfumes { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
@@ -31,29 +36,41 @@
         .admin-input { width: 100%; background: #000; color: var(--gold); border: 1px solid var(--gold); border-radius: 4px; padding: 8px; margin: 4px 0; font-size: 0.8rem; box-sizing: border-box; }
         .admin-label { font-size: 0.65rem; color: var(--gold); text-align: left; margin-top: 8px; font-weight: bold; }
         
-        #admin-bar { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 999; gap: 10px; width: 90%; max-width: 400px; }
-        .admin-btn { flex: 1; padding: 12px; border-radius: 25px; font-weight: bold; cursor: pointer; border: none; font-size: 0.8rem; }
-
-        /* MODAL */
-        #custom-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px); }
-        .modal-content { background: var(--card-bg); border: 1px solid var(--gold); padding: 25px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; }
+        .btn-remove { color: #ff4444; font-size: 0.75rem; cursor: pointer; margin-top: 8px; background: none; border: 1px solid #ff444444; padding: 6px; border-radius: 6px; width: 100%; font-weight: bold; }
+        .btn-reply { color: var(--gold); font-size: 0.75rem; cursor: pointer; margin-top: 5px; background: none; border: 1px solid #d4af3744; padding: 6px; border-radius: 6px; width: 100%; font-weight: bold; }
 
         .star-rating { color: #444; cursor: pointer; font-size: 1.3rem; margin: 10px 0; }
         .star-rating .fa-star.active { color: var(--gold); }
+
         .btn-buy { background: var(--accent-green); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 8px; }
-        .comment-box { background: #151515; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 3px solid var(--gold); text-align: left; }
+        
+        #admin-bar { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 999; gap: 10px; width: 90%; max-width: 400px; }
+        .admin-btn { flex: 1; padding: 12px; border-radius: 25px; font-weight: bold; cursor: pointer; border: none; font-size: 0.8rem; }
+
+        /* MODAL CUSTOMIZADO */
+        #custom-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 10000; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(5px); }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--gold); padding: 25px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,1); }
+        .modal-content h3 { margin-top: 0; color: var(--gold); }
+        .modal-content input { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; margin-top: 15px; box-sizing: border-box; text-align: center; font-size: 16px; /* Evita zoom no iPhone */ }
+        .modal-btns { display: flex; gap: 10px; margin-top: 25px; }
+        .modal-btns button { flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
+        .btn-confirm-modal { background: var(--gold); color: #000; }
+        .btn-cancel-modal { background: #222; color: #fff; }
+
+        .comment-box { background: #151515; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 3px solid var(--gold); }
+        .reply-box { background: #000; margin-top: 10px; padding: 10px; border-radius: 8px; font-size: 0.85rem; border: 1px solid #222; }
     </style>
 </head>
-<body class="">
+<body>
 
 <div id="custom-modal">
     <div class="modal-content">
-        <h3 id="modal-title" style="color:var(--gold)">Título</h3>
+        <h3 id="modal-title">Título</h3>
         <p id="modal-text" style="color: #bbb; font-size: 0.9rem;"></p>
         <div id="modal-input-container"></div>
-        <div style="display:flex; gap:10px; margin-top:20px;">
-            <button id="modal-cancel" style="flex:1; padding:12px; border-radius:10px; background:#222; color:#fff; border:none;">Cancelar</button>
-            <button id="modal-confirm" style="flex:1; padding:12px; border-radius:10px; background:var(--gold); color:#000; border:none; font-weight:bold;">Confirmar</button>
+        <div class="modal-btns">
+            <button id="modal-cancel" class="btn-cancel-modal">Cancelar</button>
+            <button id="modal-confirm" class="btn-confirm-modal">Confirmar</button>
         </div>
     </div>
 </div>
@@ -61,11 +78,17 @@
 <div class="container" id="app">
     <div id="home" class="page active">
         <div class="profile">
-            <!-- LOGO EDITÁVEL VIA URL -->
-            <img id="main-logo-img" src="" onclick="adminLogin()">
-            <div class="admin-label" style="text-align:center">URL da Logo Principal:</div>
-            <input type="text" id="admin-logo-url" class="admin-input" placeholder="Cole a URL da imagem">
+            <div class="logo-container">
+                <img id="main-logo" src="WhatsApp Image 2026-05-04 at 18.46.47.jpeg">
+                <!-- BOTÃO INVISÍVEL PARA TRIGGER NO CELULAR -->
+                <button class="admin-trigger" onclick="adminLogin()"></button>
+            </div>
             
+            <div class="btn-admin-only" style="padding: 0 40px;">
+                <div class="admin-label" style="text-align: center;">URL da Nova Logo:</div>
+                <input type="text" id="logo-url-input" class="admin-input" placeholder="Cole o link da imagem aqui...">
+            </div>
+
             <h2>Gui Parfums</h2>
             <p style="color: #888;">Luxo e Exclusividade</p>
         </div>
@@ -74,12 +97,12 @@
         <a href="https://wa.me/qr/O4T3FOBIPCKJJ1" class="nav-button" style="color: var(--accent-green); border-color: #25d36644;"><i class="fab fa-whatsapp" style="margin-right: 12px;"></i> WhatsApp</a>
 
         <div style="margin-top: 40px; border-top: 1px solid #222; padding-top: 25px;">
-            <h3>Avalie nossa loja</h3>
+            <h3>Avaliações</h3>
             <div id="star-selector" class="star-rating">
                 <i class="fas fa-star" data-v="1"></i><i class="fas fa-star" data-v="2"></i><i class="fas fa-star" data-v="3"></i><i class="fas fa-star" data-v="4"></i><i class="fas fa-star" data-v="5"></i>
             </div>
-            <input type="text" id="user-name" placeholder="Seu nome" style="width:100%; padding:12px; background:#111; border:1px solid #333; color:white; border-radius:10px; margin-bottom:10px; box-sizing:border-box;">
-            <textarea id="user-msg" placeholder="Sua mensagem..." style="width:100%; padding:12px; background:#111; border:1px solid #333; color:white; border-radius:10px; height: 70px; box-sizing:border-box;"></textarea>
+            <input type="text" id="user-name" placeholder="Seu nome" style="width:100%; padding:12px; background:#111; border:1px solid #333; color:white; border-radius:10px; margin-bottom:10px; box-sizing: border-box;">
+            <textarea id="user-msg" placeholder="Sua mensagem..." style="width:100%; padding:12px; background:#111; border:1px solid #333; color:white; border-radius:10px; height: 70px; box-sizing: border-box;"></textarea>
             <button onclick="salvarComentario()" style="background:var(--gold); border:none; width:100%; padding:14px; border-radius:10px; font-weight:bold; margin-top:10px; cursor:pointer; color: #000;">Postar Avaliação</button>
             <div id="comentarios-lista" style="margin-top: 25px;"></div>
         </div>
@@ -96,7 +119,7 @@
 
     <div id="admin-bar">
         <button class="admin-btn" style="background:var(--gold); color: black;" onclick="addProduto()">＋ ITEM</button>
-        <button class="admin-btn" style="background:#fff" onclick="saveAll()">💾 SALVAR</button>
+        <button class="admin-btn" style="background:#fff" onclick="saveAll()">💾 SALVAR TUDO</button>
         <button class="admin-btn" style="background:#ff4444; color:#fff" onclick="exitAdmin()">✕ SAIR</button>
     </div>
 </div>
@@ -104,98 +127,99 @@
 <script>
     let currentStars = 0;
     let clickCount = 0;
+    let lastClickTime = 0;
     
-    // CARREGAR DADOS (LOGO E PRODUTOS)
-    let config = JSON.parse(localStorage.getItem('gui_config')) || { logo: "WhatsApp Image 2026-05-04 at 18.46.47.jpeg" };
     let db = JSON.parse(localStorage.getItem('guivip_db')) || [{ nome: "Le Male Elixir", preco: "R$ 620,00", img: "https://fimgs.net/mdimg/perfume/375x500.81648.jpg" }];
     let comentarios = JSON.parse(localStorage.getItem('guivip_coment')) || [];
+    let config = JSON.parse(localStorage.getItem('guivip_config')) || { logo: "WhatsApp Image 2026-05-04 at 18.46.47.jpeg" };
 
     function openModal(title, text, hasInput, onConfirm, isAlert = false) {
         const modal = document.getElementById('custom-modal');
         const container = document.getElementById('modal-input-container');
+        const cancelBtn = document.getElementById('modal-cancel');
         document.getElementById('modal-title').innerText = title;
         document.getElementById('modal-text').innerText = text;
-        container.innerHTML = hasInput ? `<input type="password" id="modal-field" placeholder="Senha..." style="width:100%; padding:12px; background:#000; border:1px solid #333; color:#fff; border-radius:8px; margin-top:15px; box-sizing:border-box; text-align:center;">` : '';
-        document.getElementById('modal-cancel').style.display = isAlert ? 'none' : 'block';
+        container.innerHTML = hasInput ? `<input type="password" id="modal-field" placeholder="Digite a senha..." autofocus>` : '';
+        cancelBtn.style.display = isAlert ? 'none' : 'block';
         modal.style.display = 'flex';
+        
         document.getElementById('modal-confirm').onclick = () => {
             const val = hasInput ? document.getElementById('modal-field').value : true;
             modal.style.display = 'none';
             if(onConfirm) onConfirm(val);
         };
-        document.getElementById('modal-cancel').onclick = () => modal.style.display = 'none';
+        cancelBtn.onclick = () => modal.style.display = 'none';
     }
 
-    // STAR RATING
-    document.querySelectorAll('#star-selector i').forEach(star => {
-        star.onclick = () => {
-            currentStars = star.dataset.v;
-            document.querySelectorAll('#star-selector i').forEach(s => s.classList.toggle('active', s.dataset.v <= currentStars));
-        };
-    });
-
     function render() {
-        // Atualiza Logo Principal
-        const logoImg = document.getElementById('main-logo-img');
-        const logoInput = document.getElementById('admin-logo-url');
-        logoImg.src = config.logo;
-        logoInput.value = config.logo;
+        document.getElementById('main-logo').src = config.logo;
+        document.getElementById('logo-url-input').value = config.logo;
 
-        // Atualiza Grid de Produtos
         const grid = document.getElementById('grid');
         grid.innerHTML = "";
         db.forEach((p, i) => {
             grid.innerHTML += `
                 <div class="card">
-                    <img src="${p.img}" onerror="this.src='https://via.placeholder.com/150'">
+                    <img src="${p.img}" onerror="this.src='https://via.placeholder.com/150?text=Foto'">
                     <h4 class="display-text">${p.nome}</h4>
+                    <div class="admin-label">Nome:</div>
                     <input type="text" class="admin-input" value="${p.nome}" id="n-${i}">
-                    <span class="price display-text" style="color:var(--gold)">${p.preco}</span>
+                    <span class="display-text" style="color:var(--gold)">${p.preco}</span>
+                    <div class="admin-label">Preço:</div>
                     <input type="text" class="admin-input" value="${p.preco}" id="p-${i}">
-                    <div class="admin-label">URL da Imagem:</div>
+                    <div class="admin-label">URL Foto:</div>
                     <input type="text" class="admin-input" value="${p.img}" id="i-${i}">
                     <button class="btn-buy" onclick="comprar('${p.nome}')">Comprar</button>
-                    <button class="btn-admin-only" style="color:#ff4444; background:none; border:none; margin-top:10px; cursor:pointer; font-weight:bold" onclick="removerProduto(${i})">Remover</button>
+                    <button class="btn-remove btn-admin-only" onclick="removerProduto(${i})">Remover</button>
                 </div>`;
         });
 
-        // Atualiza Comentários
         const lista = document.getElementById('comentarios-lista');
         lista.innerHTML = "";
         comentarios.forEach((c, i) => {
-            let replyHtml = c.reply ? `<div class="reply-box" style="background:#000; padding:10px; border-radius:8px; margin-top:10px; border:1px solid #222;"><span style="color:var(--gold); font-size:0.7rem; font-weight:bold; display:block;">RESPOSTA DO DONO</span>${c.reply}</div>` : '';
-            lista.innerHTML += `<div class="comment-box">
-                <div style="display:flex; justify-content:space-between"><b>${c.nome}</b> <span>${'⭐'.repeat(c.stars)}</span></div>
-                <p style="color:#ccc; font-size:0.9rem; margin:10px 0;">${c.msg}</p>
-                ${replyHtml}
-                <div class="btn-admin-only" style="margin-top:10px">
-                    <button style="color:var(--gold); background:none; border:none; cursor:pointer;" onclick="responderComentario(${i})">Responder</button>
-                    <button style="color:red; background:none; border:none; cursor:pointer; margin-left:10px;" onclick="excluirComentario(${i})">Excluir</button>
-                </div>
-            </div>`;
+            let replyHtml = c.reply ? `<div class="reply-box"><span style="color:var(--gold); font-size:0.7rem; font-weight:bold; display:block">RESPOSTA DO DONO:</span>${c.reply}</div>` : '';
+            lista.innerHTML += `
+                <div class="comment-box">
+                    <div style="display:flex; justify-content:space-between">
+                        <b>${c.nome}</b>
+                        <div>${'<i class="fas fa-star" style="color:var(--gold); font-size:0.7rem"></i>'.repeat(c.stars)}</div>
+                    </div>
+                    <p style="margin:5px 0; color:#ccc; font-size:0.9rem">${c.msg}</p>
+                    ${replyHtml}
+                    <div class="btn-admin-only" style="margin-top:12px; display:flex; gap:8px">
+                        <button class="btn-reply" onclick="responderComentario(${i})">Responder</button>
+                        <button class="btn-remove" style="margin:0" onclick="excluirComentario(${i})">Excluir</button>
+                    </div>
+                </div>`;
         });
     }
 
     function adminLogin() {
+        const now = Date.now();
+        // Reseta o contador se demorar mais de 2 segundos entre cliques
+        if (now - lastClickTime > 2000) clickCount = 0;
+        
+        lastClickTime = now;
         clickCount++;
+
         if(clickCount >= 5) {
-            openModal("ACESSO RESTRITO", "Digite a senha do administrador:", true, (senha) => {
+            clickCount = 0;
+            openModal("ACESSO RESTRITO", "Área de Gerenciamento:", true, (senha) => {
                 if(senha === "gui123") {
                     document.getElementById('app').classList.add('admin-active');
                     document.getElementById('admin-bar').style.display = 'flex';
                     render();
-                } else { alert("Senha incorreta!"); }
+                } else { 
+                    openModal("ERRO", "Senha incorreta!", false, null, true); 
+                }
             });
-            clickCount = 0;
         }
     }
 
     function saveAll() {
-        // Salva a Logo
-        config.logo = document.getElementById('admin-logo-url').value;
-        localStorage.setItem('gui_config', JSON.stringify(config));
+        config.logo = document.getElementById('logo-url-input').value;
+        localStorage.setItem('guivip_config', JSON.stringify(config));
 
-        // Salva os Produtos
         db.forEach((p, i) => {
             p.nome = document.getElementById(`n-${i}`).value;
             p.preco = document.getElementById(`p-${i}`).value;
@@ -204,32 +228,29 @@
         localStorage.setItem('guivip_db', JSON.stringify(db));
         localStorage.setItem('guivip_coment', JSON.stringify(comentarios));
         
-        alert("Alterações salvas com sucesso!");
-        render();
+        openModal("SUCESSO", "Tudo foi salvo!", false, () => location.reload(), true);
     }
 
     function exitAdmin() {
         document.getElementById('app').classList.remove('admin-active');
         document.getElementById('admin-bar').style.display = 'none';
         render();
-        goTo('home');
     }
 
-    function addProduto() { db.push({ nome: "Novo Perfume", preco: "R$ 0,00", img: "" }); render(); }
+    function addProduto() { db.push({ nome: "Novo", preco: "R$ 0,00", img: "" }); render(); }
     function removerProduto(i) { db.splice(i, 1); render(); }
-    
+
     function salvarComentario() {
         const nome = document.getElementById('user-name').value || "Cliente";
         const msg = document.getElementById('user-msg').value;
-        if(!msg || currentStars === 0) return alert("Dê uma nota e escreva algo!");
+        if(!msg || currentStars === 0) return alert("Dê nota e escreva algo!");
         comentarios.unshift({ nome, msg, stars: currentStars, reply: null });
         localStorage.setItem('guivip_coment', JSON.stringify(comentarios));
-        render();
-        document.getElementById('user-msg').value = "";
+        location.reload();
     }
 
     function responderComentario(i) {
-        const resp = prompt("Sua resposta:");
+        let resp = prompt("Sua resposta:");
         if(resp) { comentarios[i].reply = resp; render(); }
     }
 
@@ -237,13 +258,21 @@
 
     function comprar(p) {
         if(document.getElementById('app').classList.contains('admin-active')) return;
-        window.open("https://wa.me/qr/O4T3FOBIPCKJJ1?text=" + encodeURIComponent("Olá! Quero o " + p));
+        window.open("https://wa.me/qr/O4T3FOBIPCKJJ1?text=" + encodeURIComponent("Olá! Gostaria de saber mais sobre o perfume: " + p));
     }
 
     function goTo(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
+        window.scrollTo(0,0);
     }
+
+    document.querySelectorAll('#star-selector i').forEach(star => {
+        star.onclick = () => {
+            currentStars = star.dataset.v;
+            document.querySelectorAll('#star-selector i').forEach(s => s.classList.toggle('active', s.dataset.v <= currentStars));
+        };
+    });
 
     window.onload = render;
 </script>
